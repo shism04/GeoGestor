@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.leaflet-popup-content {
+    margin: 0;
+}
+
+.btn-overlay {
+    pointer-events: none;
+}
+
+.backdrop {
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: all;
+}
+
+.btn {
+    font-size: 0.8rem;
+}

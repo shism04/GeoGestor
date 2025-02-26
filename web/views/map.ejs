@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="leaflet.css">
+  <link rel="stylesheet" href="bootstrap.min.css">
+  <link rel='stylesheet' href='/stylesheets/style.css'>
+</head>
+
+<body>
+  <div id="mapa" style="min-height: 75vh"></div>
+  <button id="findNearest" class="btn btn-primary mt-2 mx-2">Más Cercano</button>
+  <div class="actions bg-primary-subtle py-2 mt-2">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text">Filtrar por categoría:</span>
+            <select class="form-select" id="filterCategory">
+              <option value="all">Todas</option>
+              <option value="Hotel">Hotel</option>
+              <option value="Restaurante">Restaurante</option>
+              <option value="Museo">Museo</option>
+              <option value="Parque">Parque</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <button type="button" class="btn btn-primary" id="addPoint" data-bs-toggle="modal"
+            data-bs-target="#puntointeresmodaladd">
+            Añadir Punto de Interés
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="puntointeresmodaladd" tabindex="-1" aria-labelledby="puntointeresmodalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="puntointeresmodalLabel">Añadir Punto de Interés</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="/mapa/addpunto" method="post" id="form-model-add" enctype="multipart/form-data">
+            <!-- Nombre (Siempre visible) -->
+            <div class="mb-3">
+              <label for="nombre" class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre"
+                placeholder="Ej: Hotel Plaza del Castillo" required>
+            </div>
+
+            <!-- Tipo de Punto de Interés -->
+            <div class="mb-3">
+              <label for="tipo" class="form-label">Tipo de Punto de Interés</label>
+              <select class="form-select" id="tipo" name="tipo" required>
+                <option value="" selected disabled>Seleccione un tipo</option>
+                <option value="Hotel">Hotel</option>
+                <option value="Restaurante">Restaurante</option>
+                <option value="Museo">Museo</option>
+                <option value="Parque">Parque</option>
+              </select>
+            </div>
+
+            <!-- Contenedores de Inputs Específicos -->
+            <div id="Hotel-fields" class="tipo-fields d-none">
+              <div class="mb-3">
+                <label for="precio" class="form-label">Precio Medio</label>
+                <input type="text" class="form-control" name="precio_medio" placeholder="Ej: 120€" required>
+              </div>
+              <div class="mb-3">
+                <label for="horario" class="form-label">Horario</label>
+                <input type="text" class="form-control" name="horario"
+                  placeholder="Ej: Check-in: 14:00 - Check-out: 12:00" required>
+              </div>
+              <div class="mb-3">
+                <label for="disponibilidad" class="form-label">Disponibilidad</label>
+                <input type="text" class="form-control" name="disponibilidad" placeholder="Ej: Alta" required>
+              </div>
+            </div>
+
+            <div id="Restaurante-fields" class="tipo-fields d-none">
+              <div class="mb-3">
+                <label for="cocina" class="form-label">Tipo de Cocina</label>
+                <input type="text" class="form-control" name="cocina" placeholder="Ej: Italiana, Japonesa" required>
+              </div>
+              <div class="mb-3">
+                <label for="horario" class="form-label">Horario</label>
+                <input type="text" class="form-control" name="horario" placeholder="Ej: 12:00 - 23:00" required>
+              </div>
+            </div>
+
+            <div id="Museo-fields" class="tipo-fields d-none">
+              <div class="mb-3">
+                <label for="historia" class="form-label">Historia</label>
+                <textarea class="form-control" name="historia" rows="3" placeholder="Breve historia" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="costo" class="form-label">Costo de Entrada</label>
+                <input type="text" class="form-control" name="costo_entrada" placeholder="Ej: 10€" required>
+              </div>
+              <div class="mb-3">
+                <label for="horario" class="form-label">Horario</label>
+                <input type="text" class="form-control" name="horario" placeholder="Ej: 10:00 - 18:00" required>
+              </div>
+            </div>
+
+            <div id="Parque-fields" class="tipo-fields d-none">
+              <div class="mb-3">
+                <label for="areas" class="form-label">Áreas Recreativas</label>
+                <input type="text" class="form-control" name="areas" placeholder="Ej: Juegos, Zonas de picnic" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Senderos</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="senderos_si" name="senderos" value="1">
+                  <label class="form-check-label" for="senderos_si">Sí</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="senderos_no" name="senderos" value="0">
+                  <label class="form-check-label" for="senderos_no">No</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="eventos" class="form-label">Eventos</label>
+                <input type="text" class="form-control" name="eventos" placeholder="Ej: Conciertos, Ferias">
+              </div>
+            </div>
+
+            <!-- Puntuación (Siempre visible) -->
+            <div class="mb-3">
+              <label for="puntuacion" class="form-label">Puntuación</label>
+              <input type="text" class="form-control" id="puntuacion" name="puntuacion" placeholder="Ej: 4.5">
+            </div>
+
+            <!-- Valoraciones (Siempre visible) -->
+            <div class="mb-3">
+              <label for="valoraciones" class="form-label">Valoraciones</label>
+              <input type="text" class="form-control" id="valoraciones" placeholder="Ej: 212" name="valoraciones">
+            </div>
+
+            <!-- Latitude & Longitude -->
+            <div class="mb-3">
+              <label for="latitud" class="form-label">Latitud</label>
+              <input type="text" class="form-control" id="latitud" name="latitud" placeholder="Ej: 36.7213" required>
+            </div>
+            <div class="mb-3">
+              <label for="longitud" class="form-label">Longitud</label>
+              <input type="text" class="form-control" id="longitud" name="longitud" placeholder="Ej: -4.4213" required>
+            </div>
+
+            <!-- Imagen (Siempre visible) -->
+            <div class="mb-3">
+              <label for="imagen" class="form-label">Imagen</label>
+              <input type="file" class="form-control" name="imagen" onchange="previewImageAdd(event)">
+              <div class="mt-2">
+                <img id="previewImagen" src="" alt="Imagen actual" class="img-fluid rounded" style="max-width: 200px;">
+              </div>
+            </div>
+            <!-- Botón de Guardar -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary" id="add-btn">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="cards-container" class="container mt-4">
+    <div class="row" id="row-container"></div>
+  </div>
+  <div class="modal fade" id="puntointeresmodaledit" tabindex="-1" aria-labelledby="puntointeresmodalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="puntointeresmodalLabel">Editar Punto Interes</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <form action="/mapa/updatepunto" id="form-model" method="post" enctype="multipart/form-data">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary" id="guardar-btn">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="bootstrap.min.js"></script>
+  <script src="leaflet.js"></script>
+  <script src="javascripts/front.js"></script>
+</body>
+
+</html>
